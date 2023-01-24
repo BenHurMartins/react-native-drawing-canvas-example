@@ -8,9 +8,11 @@ import {
 } from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 const WIDTH = Dimensions.get('screen').width;
+
 type PathType = {
   path: String[];
 };
+export type SigningPathType = PathType[];
 
 const ResetFieldIcon = () => {
   return (
@@ -24,7 +26,42 @@ const ResetFieldIcon = () => {
   );
 };
 const App = () => {
-  return <View />;
+  const [paths, setPaths] = useState<SigningPathType>([]);
+
+  const setNewPath = (x: number, y: number) => {
+    setPaths(prev => {
+      const result = [...prev, {path: [`M${x} ${y}`]}];
+      return result;
+    });
+  };
+  const updatePath = (x: number, y: number) => {
+    setPaths(prev => {
+      const currentPath = paths[paths.length - 1];
+      currentPath && currentPath.path.push(`L${x} ${y}`);
+
+      return currentPath ? [...prev.slice(0, -1), currentPath] : prev;
+    });
+  };
+  return (
+    <SafeAreaView style={styles.container}>
+      <View
+        style={[styles.canvas]}
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+        onResponderStart={e => {
+          setNewPath(e?.nativeEvent?.locationX, e?.nativeEvent?.locationY);
+        }}
+        onResponderMove={e => {
+          updatePath(e?.nativeEvent?.locationX, e?.nativeEvent?.locationY);
+        }}>
+        <TouchableOpacity
+          style={styles.resetButton}
+          onPress={() => setPaths([])}>
+          <ResetFieldIcon />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
