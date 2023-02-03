@@ -57,7 +57,12 @@ const Canvas = () => {
           })}
         </Svg>
       </View>
-      <StrokeSettings onChangeColor={setColor} onChangeStroke={setStroke} />
+      <StrokeSettings
+        strokeWidth={stroke}
+        currentColor={color}
+        onChangeColor={setColor}
+        onChangeStroke={setStroke}
+      />
     </>
   );
 };
